@@ -1,0 +1,15 @@
+h1 {
+    color: purple; 
+    font-size: 20px; 
+    margin: 0;
+    }
+    h1#second-title {
+        color: blue;
+    }
+    h1.italic-title {
+        font-style: italic;
+    }
+    rect {
+        fill: gray;
+        stroke: purple;
+    }
