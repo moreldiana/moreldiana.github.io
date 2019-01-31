@@ -10,7 +10,7 @@ body {font-family: Verdana, sans-serif;}
 .month {
   padding: 70px 25px;
   width: 100%;
-  background: #1abc9c;
+  background: #1a7bbc;
   text-align: center;
 }
 
@@ -67,10 +67,18 @@ body {font-family: Verdana, sans-serif;}
 
 .days li .active {
   padding: 5px;
-  background: #1abc9c;
-  color: white !important
+  background: #1a7bbc;
+  color: white 
 }
-
+/* Transparent button */
+button {
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border: none;
+    cursor:pointer;
+    overflow: hidden;
+    outline:none;
+}
 
 </style>
 
@@ -78,7 +86,7 @@ body {font-family: Verdana, sans-serif;}
 <body>
 
 <h1></h1>
-
+<!-- section of the header, where "Jan" is -->
 <div class="month">      
   <ul>
     <li class="prev">&#10094;</li>
@@ -90,6 +98,7 @@ body {font-family: Verdana, sans-serif;}
   </ul>
 </div>
 
+<!-- list days in week -->
 <ul class="weekdays">
   <li>Su</li>
   <li>Mo</li>
@@ -100,7 +109,7 @@ body {font-family: Verdana, sans-serif;}
   <li>Sa</li>
   
 </ul>
-
+<!-- list days in month of Jan -->
 <ul class="days">  
   <li> </li> 
   <li> </li>
@@ -112,7 +121,7 @@ body {font-family: Verdana, sans-serif;}
   <li>6</li>
   <li>7</li>
   <li>8</li>
-  <li>9</li>
+  <li><span class="active" Id="notToday">9</span></li>
   <li>10</li>
   <li>11</li>
   <li>12</li>
@@ -134,16 +143,17 @@ body {font-family: Verdana, sans-serif;}
   <li>28</li>
   <li>29</li>
   <li>30</li>
-  <li><span class="active" Id="today"></span>31</span></li>
+  <li><button onclick ="showToday()"><span class="days" Id="today">31</span></button></li>
 </ul>
 
 </body>
 </html>
-<!-- funtion that changes the active day class -->
+<!-- funtion that changes the active day class to the 31st -->
 <script>
-function changeClass(){
-  document.getElementById("today").className = "month";
-  console.log(changeClass);
+function showToday(){
+  document.getElementById("today").className = "active";
+  document.getElementById("notToday").className = "days";
+  console.log(showToday);
 }
 </script>
 
