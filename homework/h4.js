@@ -7,7 +7,7 @@ var title = d3.select("#title");
 title.attr("class", "big").style("color", "red");
 
 var svg = d3.select("svg");
-var circles = d3.selectAll(".dot");
+var circles = d3.selectAll(".rect");
 
 function changeColor(color) {
     circles.attr("fill", color);
