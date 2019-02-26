@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Let's Manipulate Data!</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+  </head>
+  <body>
+    <h1 id="title">Data Manipulation</h1>
+    <svg>
+    </svg>
+    <script>
+        d3.csv("csvData.csv", function(error, data) {
+            
+    data.forEach(function(d) {
+       // d.export = parseFloat(d.export);
+        console.log(data);
+    });
+    var currentData = data.filter(function(d) {
+        return d.year == "2018";
+    });
+    console.log(currentData);
+
+    var mexicoData = data.filter(function(d) {
+        return d.country == "mx";
+    });
+    console.log(mexicoData);
+
+    var dataExtent = d3.extent(currentData, function(d) {
+    return d.export;
+    });
+    console.log(dataExtent);
+
+    var groupedCountries = d3.nest()
+    .key(function(d) {
+        return d.country;
+    })
+    .entries(data);
+
+    console.log("groupedCountries", groupedCountries);
+    });
+
+    </script>
+  </body>
+</html>

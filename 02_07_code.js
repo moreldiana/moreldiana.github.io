@@ -7,8 +7,8 @@ d3.text("data/textData.txt", function(error, data) {
 
 d3.csv("data/csvData.csv", function(error, data) {
     data.forEach(function(d) {
-        d.export = parseFloat(d.export);
-    });
+    //    d.export = parseFloat(d.export);
+    // });
     console.log("csv:", data);
 });
 
