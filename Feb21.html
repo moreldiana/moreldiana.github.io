@@ -2,43 +2,88 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Let's Manipulate Data!</title>
+    <title>Let's Manipulate Some Data!</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
   </head>
   <body>
-    <h1 id="title">Data Manipulation</h1>
+    <h1 id="title">Data Manipulation Page</h1>
     <svg>
     </svg>
     <script>
-        d3.csv("csvData.csv", function(error, data) {
-            
-    data.forEach(function(d) {
-       // d.export = parseFloat(d.export);
-        console.log(data);
-    });
-    var currentData = data.filter(function(d) {
-        return d.year == "2018";
-    });
-    console.log(currentData);
 
-    var mexicoData = data.filter(function(d) {
-        return d.country == "mx";
-    });
-    console.log(mexicoData);
+        // define global variables first!
+        var limit = 5;
+        var width = window.innerWidth - 100;
 
-    var dataExtent = d3.extent(currentData, function(d) {
-    return d.export;
-    });
-    console.log(dataExtent);
+        d3.queue()
+            .defer(d3.csv, "csvData.csv")
+            .defer(d3.csv, "countryNames.csv")
+            .awaitAll(function(error, dataArray) {
 
-    var groupedCountries = d3.nest()
-    .key(function(d) {
-        return d.country;
-    })
-    .entries(data);
+                console.log("dataArray", dataArray);
+                const mergedData = d3.merge(dataArray);
+                console.log("mergedData", mergedData);
 
-    console.log("groupedCountries", groupedCountries);
-    });
+                var data = dataArray[0];
+                var lookup = dataArray[1];
+                var countryNames = {};
+                lookup.forEach(function(d) {
+                    countryNames[d.code] = d.name;
+                    // countryNames.mx = "Mexico";
+                });
+                console.log(countryNames);
+
+                data.forEach(function(d, i) {
+                    d.export = parseFloat(d.export);
+                    d.source = "Dave Made This";
+                    d.rank = i + 1;
+                    // d.fullName = countryNames.mx;
+                    // d.fullName = countryNames["mx"];
+                    var countryCode = d.country;
+                    d.fullName = countryNames[countryCode];
+                    console.log(d);
+                });
+
+                var currentData = data.filter(function(d) {
+                    return d.year == "2018";
+                });
+                console.log(currentData);
+
+                var mexicoData = data.filter(function(d) {
+                    return d.country == "mx";
+                });
+                console.log(mexicoData);
+
+                var dataExtent = d3.extent(currentData, function(d) {
+                    return d.export;
+                });
+                console.log(dataExtent);
+
+                var groupedCountries = d3.nest()
+                    .key(function(row) {
+                        return row.country;
+                    })
+                    .entries(data);
+
+                groupedCountries.forEach(function(d) {
+                    d.total = d3.sum(d.values, function(row) {
+                        return row.export;
+                    });
+                    d.average = d3.mean(d.values, function(row) {
+                        return row.export;
+                    });
+                });
+
+                console.log("groupedCountries", groupedCountries);
+
+                var yearlyData = d3.nest()
+                    .key(function(row) {
+                        return row.year;
+                    })
+                    .entries(data);
+
+                console.log("yearlyData", yearlyData);
+            });
 
     </script>
   </body>
