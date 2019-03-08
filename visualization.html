@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/topojson@3"></script>
   </head>
   <body>
-    <h1 id="title">Dave's Cool World Map</h1>
+    <h1 id="title">Dave's Cool State Map</h1>
     <svg id="my-map"></svg>
     <script>
 
@@ -15,9 +15,9 @@
         var height = 700;
 
         d3.queue()
-            .defer(d3.csv, "csvData.csv")
-            .defer(d3.csv, "countryNames.csv")
-            .defer(d3.json, "world.json")
+            .defer(d3.csv, "csvData2.csv")
+            .defer(d3.csv, "stateNames.csv")
+            .defer(d3.json, "usa.json")
             .awaitAll(function(error, dataArray) {
 
                 var data = dataArray[0];
@@ -35,12 +35,12 @@
                     .range(["rgb(200, 150, 150)", "rgb(100, 0, 0)"]);
 
                 var names = dataArray[1];
-                var countryTopojson = dataArray[2];
+                var stateTopojson = dataArray[2];
 
-                var geoJSON = topojson.feature(countryTopojson, countryTopojson.objects.countries);
+                var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.states);
                 console.log(geoJSON);
-                geoJSON.features = geoJSON.features.filter(function(country) {
-                    return country.id != "AQ" && country.id != "-99";
+                geoJSON.features = geoJSON.features.filter(function(state) {
+                    return state.id == "MA";
                 });
 
                 var projection = d3.geoMercator()
@@ -53,16 +53,16 @@
                     .attr("width", width + "px")
                     .attr("height", height + "px");
 
-                var countries = svg.selectAll("path")
+                var states = svg.selectAll("path")
                     .data(geoJSON.features);
 
-                countries.enter().append("path")
+                states.enter().append("path")
                     .attr("d", function(feature) {
                         return path(feature);
                     })
                     .attr("fill", function(feature) {
                         var matches = latestData.filter(function(d) {
-                            return d.country == feature.id.toLowerCase();
+                            return d.state == feature.id.toLowerCase();
                         });
                         if (matches.length > 0) {
                             return colorScale(matches[0].export);
@@ -73,9 +73,7 @@
                     });
 
                 var points = [
-                    {"name": "Boston", "coords": [-71.0589, 42.3601]},
-                    {"name": "London", "coords": [-0.1278, 51.5074]},
-                    {"name": "Cape Town", "coords": [18.424055, -33.924870]}
+                    {"name": "Boston", "coords": [-71.0589, 42.3601]}
                 ];
 
                 var cities = svg.selectAll("circle")
