@@ -76,8 +76,11 @@
                 //     {"name": "Boston", "coords": [-71.0589, 42.3601]}
                 // ];
 
-                // var cities = svg.selectAll("circle")
+                var cities = svg.selectAll("circle")
                 //     .data(points);
+
+                var features = svg.append("g")
+            .attr("class","features");
 
                 cities.enter().append("circle")
                     .attr("transform", function(d) {
@@ -85,7 +88,7 @@
                     })
                     .attr("r", 10)
                     .attr("fill", "cornflowerblue");
-                    d3.csv("2018-bluebikes-tripdata.csv", function (error, data) {
+                    d3.csv("201812-bluebikes-tripdata.csv", function (error, data) {
             features.selectAll("circle")
                     .data(data)
                     .enter()
@@ -96,7 +99,7 @@
                     .attr("cy", function (d) {
                         return projection([d.startstationlongitude, d.startstationlatitude])[1];
                     })
-                    .attr("r", 5)
+                    .attr("r", 1)
                     .style("fill", "red");
 
         });
