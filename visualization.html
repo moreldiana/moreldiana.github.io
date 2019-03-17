@@ -22,7 +22,7 @@
         var height = 700;
 
         d3.queue()
-            .defer(d3.csv, "csvData2.csv")
+            .defer(d3.csv, "201812-bluebikes-tripdata.csv")
             .defer(d3.csv, "stateNames.csv")
             .defer(d3.json, "usa.json")
             .awaitAll(function(error, dataArray) {
@@ -30,7 +30,8 @@
                 var data = dataArray[0];
                 data.forEach(function(d) {
                     d.export = parseFloat(d.export);
-                });
+                }
+                );
                 var latestData = data.filter(function(d) {
                     return d.year == "2018";
                 });
@@ -67,6 +68,9 @@
                     .attr("d", function(feature) {
                         return path(feature);
                     })
+                    .attr("id", function(feature){
+                        return "id-"+feature.id;
+                    })
                     .attr("fill", function(feature) {
                         var matches = latestData.filter(function(d) {
                             return d.state == feature.id.toLowerCase();
@@ -79,9 +83,6 @@
                         }
                     });
 
-                // var points = [
-                //     {"name": "Boston", "coords": [-71.0589, 42.3601]}
-                // ];
 
                 var cities = svg.selectAll("circle")
                 //     .data(points);
