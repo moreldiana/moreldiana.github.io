@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Let's Make a Map!</title>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+
+    <title>Visualizing Boston's Bike Sharing System</title>
+    <link rel="stylesheet" href="styleProject.css" />
+
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200" rel="stylesheet">
+    <script src="loadprojectdata2.js"></script>
+  </head>
+  <body>
+        <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
+        <h2 id="intro">The bluebikes, formally hubway bikes, is Boston's public bike share program. Since 2012, this system has increased access to various parts of boston through an active and affordable means of transportation. The data shows trip histories between XX dates. This visualization explores the expanding network of biking stations by gender, membership and age.  </h2>  
+    <svg id="my-map"></svg>
+    <script>
+
+        var width = window.innerWidth;
+        var height = 700;
+
+        d3.queue()
+            .defer(d3.csv, "201812-bluebikes-tripdata.csv")
+            .defer(d3.csv, "stateNames.csv")
+            .defer(d3.json, "usa.json")
+            .awaitAll(function(error, dataArray) {
+
+                var data = dataArray[0];
+                data.forEach(function(d) {
+                    d.export = parseFloat(d.export);
+                }
+                );
+                var latestData = data.filter(function(d) {
+                    return d.year == "2018";
+                });
+                var domain = d3.extent(latestData, function(d) {
+                    return d.export;
+                });
+                var colorScale = d3.scaleLinear()
+                    .domain(domain)
+                    .range(["rgb(200, 150, 150)", "rgb(100, 0, 0)"]);
+
+                var names = dataArray[1];
+                var stateTopojson = dataArray[2];
+
+                var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.states);
+                console.log(geoJSON);
+                geoJSON.features = geoJSON.features.filter(function(state) {
+                    return state.id == "MA";
+                });
+
+                var projection = d3.geoMercator()
+                    .fitSize([width, height], geoJSON);
+
+                var path = d3.geoPath()
+                    .projection(projection);
+
+                var svg = d3.select("#my-map")
+                    .attr("width", width + "px")
+                    .attr("height", height + "px");
+
+                var states = svg.selectAll("path")
+                    .data(geoJSON.features);
+
+                states.enter().append("path")
+                    .attr("d", function(feature) {
+                        return path(feature);
+                    })
+                    .attr("id", function(feature){
+                        return "id-"+feature.id;
+                    })
+                    .attr("fill", function(feature) {
+                        var matches = latestData.filter(function(d) {
+                            return d.state == feature.id.toLowerCase();
+                        });
+                        if (matches.length > 0) {
+                            return colorScale(matches[0].export);
+                        }
+                        else {
+                            return "rgb(200, 200, 200)";
+                        }
+                    });
+
+
+                var cities = svg.selectAll("circle")
+                //     .data(points);
+
+                var features = svg.append("g")
+            .attr("class","features");
+
+                cities.enter().append("circle")
+                    .attr("transform", function(d) {
+                        return "translate(" + projection(d.coords) + ")";
+                    })
+                    .attr("r", 10)
+                    .attr("fill", "cornflowerblue");
+                    d3.csv("201812-bluebikes-tripdata.csv", function (error, data) {
+            features.selectAll("circle")
+                    .data(data)
+                    .enter()
+                    .append("circle")
+                    .attr("cx", function (d) {
+                        return projection([d.startstationlongitude, d.startstationlatitude])[0];
+                    })
+                    .attr("cy", function (d) {
+                        return projection([d.startstationlongitude, d.startstationlatitude])[1];
+                    })
+                    .attr("r", 1)
+                    .style("fill", "red");
+
+        });
+    });
+
+    </script>
+  </body>
+</html>
