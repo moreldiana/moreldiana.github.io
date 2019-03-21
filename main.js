@@ -23,7 +23,10 @@
                       .attr("class", "town")
                       .attr('d', path)
                       .style('stroke', "white");
-    }
+   
+   
+                    }
+  
   
     d3.json("ma-towns.topojson", function(err, topology) {
       map = new Map(topology);
@@ -31,4 +34,4 @@
   
   }());
   
-        
+ 

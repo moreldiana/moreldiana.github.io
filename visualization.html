@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styleProject.css" />
 
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200" rel="stylesheet">
-    <script src="loadprojectdata2.js"></script>
+    <!-- <script src="loadprojectdata2.js"></script> -->
   </head>
   <body>
         <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
@@ -24,30 +24,32 @@
         d3.queue()
             .defer(d3.csv, "201812-bluebikes-tripdata.csv")
             .defer(d3.csv, "stateNames.csv")
-            .defer(d3.json, "ma-towns.topojson")
+            .defer(d3.json, "MA-25-massachusetts-counties.json")
             .awaitAll(function(error, dataArray) {
 
                 var data = dataArray[0];
-                
-               
                 var names = dataArray[1];
                 var stateTopojson = dataArray[2];
 
-                var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.towns);
+                var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
                 console.log(geoJSON);
-                geoJSON.features = geoJSON.features.filter(function(state) {
-                    return state.id == "MA";
+               geoJSON.features = geoJSON.features.filter(function(state) {
+                   return state.NAME != "Norfolk"      ;
                 });
 
                 var projection = d3.geoMercator()
-                    .fitSize([width, height], geoJSON);
+                    .fitSize([width, height], geoJSON) 
+                    ;
 
                 var path = d3.geoPath()
                     .projection(projection);
 
                 var svg = d3.select("#my-map")
+
                     .attr("width", width + "px")
                     .attr("height", height + "px");
+
+                
 
                 var states = svg.selectAll("path")
                     .data(geoJSON.features);
@@ -66,8 +68,8 @@
                
                 var nest = d3.nest()
                 .key(function(d){return d.startstationname;})
-
                 .entries(data)
+                
 
                 console.log(nest)
 
@@ -75,9 +77,11 @@
             .attr("class","features");
 
  
-                    
+            d3.csv("201812-bluebikes-tripdata.csv", function (error, data) {
                     features.selectAll("circle")
-                    .data(data)
+                    
+                    .data(nest)
+                 //   .data(nest.map(function(d) { return +d; }))
                     .enter()
                     .append("circle")
                     .attr("cx", function (d) {
@@ -85,12 +89,12 @@
                     .attr("cy", function (d) {
                         return projection([d.startstationlongitude, d.startstationlatitude])[1];})
 // Need to fix this line below. Trying to make size of circle, the value from nest
-                    .attr("r", function(d) { return d.values.length;})
-                  // .attr("r", .5)
+                    .attr("r", function(d) { return d.values.length/250;})
+               // .attr("r", .5)
                     .style("fill", "red");
 
         });
-  
+    });
 
     </script>
   </body>
