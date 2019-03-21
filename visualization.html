@@ -34,7 +34,7 @@
                 var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
                 console.log(geoJSON);
                geoJSON.features = geoJSON.features.filter(function(state) {
-                   return state.NAME != "Norfolk"      ;
+                   return state.NAME != "Barnstable"      ;
                 });
 
                 var projection = d3.geoMercator()
