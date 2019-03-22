@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Let's Make a Map!</title>
+    <title>Boston's Bike Sharing System</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
 
@@ -34,20 +34,38 @@
                 var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
                 console.log(geoJSON);
                geoJSON.features = geoJSON.features.filter(function(state) {
-                   return state.NAME != "Barnstable"      ;
+                   return state.properties.NAME != "Barnstable" 
+                   &&  state.properties.NAME != "Berkshire"
+                   &&  state.properties.NAME != "Franklin" 
+                   &&  state.properties.NAME != "Hampshire" 
+                   &&  state.properties.NAME != "Hampden" 
+                   &&  state.properties.NAME != "Worcester"
+                   &&  state.properties.NAME != "Bristol"
+                   &&  state.properties.NAME != "Essex"
+                   &&  state.properties.NAME != "Dukes"
+                   &&  state.properties.NAME != "Nantucket"
+                   &&  state.properties.NAME != "Plymouth"
+                 
+                    ;
                 });
 
                 var projection = d3.geoMercator()
-                    .fitSize([width, height], geoJSON) 
-                    ;
+                    .fitSize([width, height], geoJSON) ;
 
                 var path = d3.geoPath()
                     .projection(projection);
 
                 var svg = d3.select("#my-map")
-
                     .attr("width", width + "px")
-                    .attr("height", height + "px");
+                    .attr("height", height + "px")
+                    .style("fill", "gray")
+                    .style('stroke', "black")
+                    .style('stroke-width', 3)
+                    .append("svg")
+                    .attr("width", "100%")
+                    .attr("height", "100%")
+                    .call(d3.zoom().on("zoom", function () {svg.attr("transform", d3.event.transform)}))
+                    .append("g");
 
                 
 
@@ -63,38 +81,30 @@
                     })
                
 
-
-                var cities = svg.selectAll("circle")
-               
                 var nest = d3.nest()
                 .key(function(d){return d.startstationname;})
                 .entries(data)
-                
-
                 console.log(nest)
 
                 var features = svg.append("g")
             .attr("class","features");
 
- 
-            d3.csv("201812-bluebikes-tripdata.csv", function (error, data) {
+
                     features.selectAll("circle")
-                    
                     .data(nest)
-                 //   .data(nest.map(function(d) { return +d; }))
                     .enter()
                     .append("circle")
-                    .attr("cx", function (d) {
-                        return projection([d.startstationlongitude, d.startstationlatitude])[0];})
-                    .attr("cy", function (d) {
-                        return projection([d.startstationlongitude, d.startstationlatitude])[1];})
+                  //  .attr("cx", function (d) {return projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude])[0];})
+                  // .attr("cy", function (d) {return projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude])[1];})
+                    .attr("transform", function(d) {
+                         return "translate(" + projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude]) + ")";})
 // Need to fix this line below. Trying to make size of circle, the value from nest
-                    .attr("r", function(d) { return d.values.length/250;})
-               // .attr("r", .5)
-                    .style("fill", "red");
+                  .attr("r", function(d) { return d.values.length/250;})
+                //     .attr("r", .5)
+                    .style("fill", "blue")
+                    .style("opacity", .2);
 
         });
-    });
 
     </script>
   </body>
