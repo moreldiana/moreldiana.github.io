@@ -84,10 +84,17 @@
                     })
                
 
+                    
+
                 var nest = d3.nest()
                 .key(function(d){return d.startstationname;})
                 .entries(data)
                 console.log(nest)
+
+var colorScale = d3.scaleLinear()
+                    .domain([0, 100])
+                    .range(["white", "blue"]);
+
 
                 var features = svg.append("g")
             .attr("class","features");
@@ -97,25 +104,19 @@
                     .data(nest)
                     .enter()
                     .append("circle")
-                  //  .attr("cx", function (d) {return projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude])[0];})
-                  // .attr("cy", function (d) {return projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude])[1];})
                     .attr("transform", function(d) {
                          return "translate(" + projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude]) + ")";})
-// Need to fix this line below. Trying to make size of circle, the value from nest
-               //   .attr("r", function(d) { return d.values.length/250;})
                      .attr("r", .5)
-                    .style("fill", "blue")
-                    .style("opacity", .2)
-                  /*  ;
-
-                    d3 .selectAll("circle")*/
-           // .on("click", function(d) { console.log(d);  })
+                     .attr("fill", function(d) {
+                return colorScale(d.values.length);
+            })
+       
             .on("mousemove", function(d) {
                 var mouse = d3.mouse(document.body);
                 d3.select("#tooltip")
                     .style("display", "block")
-                    .html("<h1>" + d.key + "</h1>" +
-                    "<h2>" + d.values.length + "</h2>")
+                    .html("<h3>" + d.key + "</h3>" +
+                    "<h3>" + d.values.length + "</h3>")
                     .style("left", mouse[0] + "px")
                     .style("top", mouse[1] - 50 + "px");  })
             .on("mouseout", function(d) {

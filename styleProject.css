@@ -9,8 +9,19 @@
         font-size: 20px;
         font-family: 'Source Sans Pro', sans-serif;
     }
+    h3 {
+        color: blue; 
+        font-size: 16px; 
+        font-family: 'Source Sans Pro', sans-serif;
+        margin: 0;
+        }
     #tooltip {
         border: 1px solid black;
-        background: "white" ;
+        background:  white ;
         display: none;
         position: absolute;}
+
+        svg{
+            display: block;
+            margin: auto;
+        }
