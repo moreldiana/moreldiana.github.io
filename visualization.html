@@ -16,7 +16,7 @@
         <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
         <h2 id="intro">The bluebikes, formally hubway bikes, is Boston's public bike share program. Since 2012, this system has increased access to various parts of boston through an active and affordable means of transportation. The data shows trip histories between XX dates. This visualization explores the expanding network of biking stations by gender, membership and age.  </h2>  
     <svg id="my-map"></svg>
-    <div id="tooltip"></div><!-- div to hold tooltip. -->
+    <div id="tooltip"></div>
     <script>
 
         var width = window.innerWidth;
@@ -25,7 +25,8 @@
         d3.queue()
             .defer(d3.csv, "201812-bluebikes-tripdata.csv")
             .defer(d3.csv, "stateNames.csv")
-            .defer(d3.json, "MA-25-massachusetts-counties.json")
+           //  .defer(d3.json, "ma-towns.json")
+           .defer(d3.json, "MA-25-massachusetts-counties.json")
             .awaitAll(function(error, dataArray) {
 
                 var data = dataArray[0];
@@ -34,6 +35,8 @@
 
                 var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
                 console.log(geoJSON);
+
+            //cb_2015_massachusetts_county_20m
                geoJSON.features = geoJSON.features.filter(function(state) {
                    return state.properties.NAME != "Barnstable" 
                    &&  state.properties.NAME != "Berkshire"
@@ -59,7 +62,7 @@
                 var svg = d3.select("#my-map")
                     .attr("width", width + "px")
                     .attr("height", height + "px")
-                    .style("fill", "gray")
+                   .style("fill", "gray")
                     .style('stroke', "black")
                     .style('stroke-width', 3)
                     .append("svg")
@@ -100,18 +103,25 @@
                     .attr("transform", function(d) {
                          return "translate(" + projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude]) + ")";})
 // Need to fix this line below. Trying to make size of circle, the value from nest
-                  .attr("r", function(d) { return d.values.length/250;})
-                //     .attr("r", .5)
+               //   .attr("r", function(d) { return d.values.length/250;})
+                     .attr("r", .5)
                     .style("fill", "blue")
                     .style("opacity", .2)
-                    ;
+                  /*  ;
 
-                    function tooltipHtml(n, d){	/* function to create html content string in tooltip div. */
-		return "<h4>"+n+"</h4><table>"+
-			"<tr><td>Station</td><td>"+(d.key)+"</td></tr>"+
-			"<tr><td>Average</td><td>"+(d.values.length)+"</td></tr>"+
-			"</table>";
-	}
+                    d3 .selectAll("circle")*/
+           // .on("click", function(d) { console.log(d);  })
+            .on("mousemove", function(d) {
+                var mouse = d3.mouse(document.body);
+                d3.select("#tooltip")
+                    .style("display", "block")
+                    .html("<h1>" + d.key + "</h1>")
+                    .style("left", mouse[0] + "px")
+                    .style("top", mouse[1] - 50 + "px");  })
+            .on("mouseout", function(d) {
+                d3.select("#tooltip")
+                    .style("display", "none")
+            });
 
 
         });
