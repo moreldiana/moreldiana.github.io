@@ -114,7 +114,8 @@
                 var mouse = d3.mouse(document.body);
                 d3.select("#tooltip")
                     .style("display", "block")
-                    .html("<h1>" + d.key + "</h1>")
+                    .html("<h1>" + d.key + "</h1>" +
+                    "<h2>" + d.values.length + "</h2>")
                     .style("left", mouse[0] + "px")
                     .style("top", mouse[1] - 50 + "px");  })
             .on("mouseout", function(d) {
