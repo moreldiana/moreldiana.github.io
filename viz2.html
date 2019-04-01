@@ -71,7 +71,7 @@
                     .append("g");
 
                 
-
+                console.log(geoJSON.features);
                 var states = svg.selectAll("path")
                     .data(geoJSON.features);
 
@@ -82,6 +82,9 @@
                     .attr("id", function(feature){
                         return "id-"+feature.id;
                     })
+                    .attr("fill", "transparent")
+                    .attr("stroke", "red")
+                    .attr("stroke-width", 0.5)
                
 
                     
