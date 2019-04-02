@@ -88,7 +88,11 @@
 
                 var nest = d3.nest()
                 .key(function(d){return d.startstationname;})
-                .rollup(function(v) { return d3.mean(v, function(d) { return d.birthyear; }); })
+                .forEach(function(d) {
+                    d.average = d3.mean(d.values, function(row) {
+                        return row.birthyear;
+                    });
+                })
                 .entries(data)
                 console.log(nest)
 
