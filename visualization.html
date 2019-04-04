@@ -171,10 +171,10 @@ function showPage() {
                 
 
 
-
+                var extent = d3.extent(data);
 
 var colorScale = d3.scaleLinear()
-                    .domain([0, 100]) //add extent
+                    .domain(extent) //add extent
                     .range(["white", "blue"]);
 
 
