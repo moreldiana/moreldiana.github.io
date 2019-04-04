@@ -89,7 +89,7 @@
                 var nest = d3.nest()
                 .key(function(d){return d.startstationname;})
                 .entries(data)
-                .forEach(function(d){d.average = d3.mean(d.value,function(row){return row.birthyear;})})
+                .forEach(function(d){d.average = d3.mean(d.values,function(row){return row.birthyear;})})
                 console.log(nest)
 
 var colorScale = d3.scaleLinear()
