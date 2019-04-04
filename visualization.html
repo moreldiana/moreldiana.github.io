@@ -1,7 +1,64 @@
 <!DOCTYPE html>
 <html>
   <head>
+
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+            /* Center the loader */
+            #loader {
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              z-index: 1;
+              width: 150px;
+              height: 150px;
+              margin: -75px 0 0 -75px;
+              border: 16px solid #f3f3f3;
+              border-radius: 50%;
+              border-top: 16px solid #3498db;
+              width: 120px;
+              height: 120px;
+              -webkit-animation: spin 2s linear infinite;
+              animation: spin 2s linear infinite;
+            }
+            
+            @-webkit-keyframes spin {
+              0% { -webkit-transform: rotate(0deg); }
+              100% { -webkit-transform: rotate(360deg); }
+            }
+            
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+            
+            /* Add animation to "page content" */
+            .animate-bottom {
+              position: relative;
+              -webkit-animation-name: animatebottom;
+              -webkit-animation-duration: 1s;
+              animation-name: animatebottom;
+              animation-duration: 1s
+            }
+            
+            @-webkit-keyframes animatebottom {
+              from { bottom:-100px; opacity:0 } 
+              to { bottom:0px; opacity:1 }
+            }
+            
+            @keyframes animatebottom { 
+              from{ bottom:-100px; opacity:0 } 
+              to{ bottom:0; opacity:1 }
+            }
+            
+            #myDiv {
+              display: none;
+              text-align: left;
+            } </style>
+
+
     <title>Boston's Bike Sharing System</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
@@ -12,13 +69,28 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200" rel="stylesheet">
     <!-- <script src="loadprojectdata2.js"></script> -->
   </head>
-  <body>
+  <body onload="myFunction()" style="margin:0;">
+
+    <div id="loader"></div>
+    
+    <div style="display:none;" id="myDiv" class="animate-bottom">
+
         <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
         <h2 id="intro">The bluebikes, formally hubway bikes, is Boston's public bike share program. Since 2012, this system has increased access to various parts of boston through an active and affordable means of transportation. The data shows trip histories between XX dates. This visualization explores the expanding network of biking stations by gender, membership and age.  </h2>  
     <svg id="my-map"></svg>
     <div id="tooltip"></div>
-    <script>
+   </div> 
+   <script>
+var myVar;
 
+function myFunction() {
+  myVar = setTimeout(showPage, 3000);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("myDiv").style.display = "block";
+}
         var width = window.innerWidth;
         var height = 700;
 
@@ -89,8 +161,17 @@
                 var nest = d3.nest()
                 .key(function(d){return d.startstationname;})
                 .entries(data)
-                .forEach(function(d){d.average = d3.mean(d.values,function(row){return row.birthyear;})})
+                nest.forEach(function(d){d.averageAge = 2019 - d3.mean(d.values,function(row){return row.birthyear;})})
+                nest.forEach(function(d){d.gender1 = d3.sum(d.values,function(row){return row.gender == 1;})})
+                nest.forEach(function(d){d.gender2 = d3.sum(d.values,function(row){return row.gender == 2;})})
+                nest.forEach(function(d){d.gendern = d3.sum(d.values,function(row){return row.gender == 0;})})
+                nest.forEach(function(d){d.Member = d3.sum(d.values,function(row){return row.usertype == 'Subscriber';})})
+                nest.forEach(function(d){d.Casual = d3.sum(d.values,function(row){return row.usertype == 'Customer';})})
                 console.log(nest)
+                
+
+
+
 
 var colorScale = d3.scaleLinear()
                     .domain([0, 100]) //add extent
@@ -117,8 +198,12 @@ var colorScale = d3.scaleLinear()
                 d3.select("#tooltip")
                     .style("display", "block")
                     .html("<h3>" + d.key + "</h3>" +
-                    "<h3>" + d.values.length + "</h3>"+
-                    "<h3>" + d.values.gender + "</h3>")
+                    "<h3>" + "Number of Rides: " + d.values.length + "</h3>"+
+                    "<h3>" + "Average Age: " + Math.round(d.averageAge) + "</h3>"+
+                    "<h3>"+ "Identify as Male Riders: " + Math.round((d.gender1/d.values.length)*100) + "%"+ "</h3>"+
+                    "<h3>" + "Identify as Female Riders: "+ Math.round((d.gender2/d.values.length)*100) + "%"+ "</h3>"+
+                    "<h3>"+ "Blue Bike Members: " + Math.round((d.member/d.values.length)*100) + "%"+ "</h3>"+
+                    "<h3>" + "Causual Riders: "+ Math.round((d.casual/d.values.length)*100) + "%"+ "</h3>")
                     .style("left", mouse[0] + "px")
                     .style("top", mouse[1] - 50 + "px");  })
             .on("mouseout", function(d) {
