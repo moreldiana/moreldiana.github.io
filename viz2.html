@@ -165,7 +165,7 @@ function showPage() {
                 nest.forEach(function(d){d.gender1 = d3.sum(d.values,function(row){return row.gender == 1;})})
                 nest.forEach(function(d){d.gender2 = d3.sum(d.values,function(row){return row.gender == 2;})})
                 nest.forEach(function(d){d.gendern = d3.sum(d.values,function(row){return row.gender == 0;})})
-                nest.forEach(function(d){d.Member = (d.values.length.filter(row.usertype == "Subscriber"))})
+                nest.forEach(function(d){d.Member = d3.sum(d.values,function(row){return row.usertype == "Subscriber";})})
                 nest.forEach(function(d){d.Casual = d3.sum(d.values,function(row){return row.usertype == "Customer";})})
                 console.log(nest)
                 
@@ -202,8 +202,8 @@ var colorScale = d3.scaleLinear()
                     "<h4>" + "Average Age: " + Math.round(d.averageAge) + "</h4>"+
                     "<h4>"+ "Male: " + Math.round((d.gender1/d.values.length)*100) + "%"+ "</h4>"+
                     "<h4>" + "Female: "+ Math.round((d.gender2/d.values.length)*100) + "%"+ "</h4>"+
-                    "<h4>"+ "Blue Bike Members: " + Math.round((d.member/d.values.length)*100) + "%"+ "</h4>"+
-                    "<h4>" + "Causual Riders: "+ Math.round((d.casual/d.values.length)*100) + "%"+ "</h4>")
+                    "<h4>"+ "Blue Bike Members: " + Math.round((d.Member/d.values.length)*100) + "%"+ "</h4>"+
+                    "<h4>" + "Causual Riders: "+ Math.round((d.Casual/d.values.length)*100) + "%"+ "</h4>")
                     .style("left", mouse[0] + "px")
                     .style("top", mouse[1] - 50 + "px");  })
             .on("mouseout", function(d) {
