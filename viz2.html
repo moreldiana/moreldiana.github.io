@@ -135,7 +135,7 @@ function showPage() {
                     .attr("width", width + "px")
                     .attr("height", height + "px")
                     .style("fill", "gray")
-                    .style("stroke-width", 5)
+                    .style("stroke-width", 1)
                     .style("stroke", "black")
                     .append("svg")
                     .attr("width", "100%")
@@ -189,7 +189,8 @@ var colorScale = d3.scaleLinear()
                     .append("circle")
                     .attr("transform", function(d) {
                          return "translate(" + projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude]) + ")";})
-                     .attr("r", 1)
+                     .attr("r", 2)
+                     .style("stroke-width", 0)
                      .attr("fill", function(d) {
                 return colorScale(d.values.length);
             })
