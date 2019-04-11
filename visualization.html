@@ -56,11 +56,26 @@
             #myDiv {
               display: none;
               text-align: left;
-            } </style>
+            } 
+            
+ 
+body {
+  margin: 0;
+}
+
+path {
+  fill: none;
+  stroke: red;
+  stroke-linejoin: round;
+  stroke-width: 1.5px;
+}
+
+            </style>
 
 
     <title>Boston's Bike Sharing System</title>
     <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="//d3js.org/d3-tile.v0.0.min.js"></script>
     <script src="https://unpkg.com/topojson@3"></script>
 
     <title>Visualizing Boston's Bike Sharing System</title>
@@ -81,6 +96,7 @@
     <div id="tooltip"></div>
    </div> 
    <script>
+ 
 var myVar;
 
 function myFunction() {
@@ -91,69 +107,70 @@ function showPage() {
   document.getElementById("loader").style.display = "none";
   document.getElementById("myDiv").style.display = "block";
 }
-        var width = window.innerWidth;
-        var height = 700;
+var width = window.innerWidth;
+var height = 700;
 
-        d3.queue()
-            .defer(d3.csv, "201812-bluebikes-tripdata.csv")
-            .defer(d3.csv, "stateNames.csv")
-           //  .defer(d3.json, "ma-towns.json")
-           .defer(d3.json, "MA-25-massachusetts-counties.json")
-            .awaitAll(function(error, dataArray) {
+d3.queue()
+    .defer(d3.csv, "201812-bluebikes-tripdata.csv")
+    .defer(d3.csv, "stateNames.csv")
+    //  .defer(d3.json, "ma-towns.json")
+    .defer(d3.json, "MA-25-massachusetts-counties.json")
+    .awaitAll(function(error, dataArray) {
 
-                var data = dataArray[0];
-                var names = dataArray[1];
-                var stateTopojson = dataArray[2];
+        var data = dataArray[0];
+        var names = dataArray[1];
+        var stateTopojson = dataArray[2];
 
-                var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
-                console.log(geoJSON);
+        var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
+        console.log(geoJSON);
 
-            //cb_2015_massachusetts_county_20m
-               geoJSON.features = geoJSON.features.filter(function(state) {
-                   return state.properties.NAME != "Barnstable" 
-                   &&  state.properties.NAME != "Berkshire"
-                   &&  state.properties.NAME != "Franklin" 
-                   &&  state.properties.NAME != "Hampshire" 
-                   &&  state.properties.NAME != "Hampden" 
-                   &&  state.properties.NAME != "Worcester"
-                   &&  state.properties.NAME != "Bristol"
-                   &&  state.properties.NAME != "Essex"
-                   &&  state.properties.NAME != "Dukes"
-                   &&  state.properties.NAME != "Nantucket"
-                   &&  state.properties.NAME != "Plymouth"
-                 
-                    ;
-                });
+        // cb_2015_massachusetts_county_20m
+        geoJSON.features = geoJSON.features.filter(function(state) {
+            return state.properties.NAME != "Barnstable" 
+            &&  state.properties.NAME != "Berkshire"
+            &&  state.properties.NAME != "Franklin" 
+            &&  state.properties.NAME != "Hampshire" 
+            &&  state.properties.NAME != "Hampden" 
+            &&  state.properties.NAME != "Worcester"
+            &&  state.properties.NAME != "Bristol"
+            &&  state.properties.NAME != "Essex"
+            &&  state.properties.NAME != "Dukes"
+            &&  state.properties.NAME != "Nantucket"
+            &&  state.properties.NAME != "Plymouth"
+            
+            ;
+        });
 
-                var projection = d3.geoMercator()
-                    .fitSize([width, height], geoJSON) ;
+        var projection = d3.geoMercator()
+            .fitSize([width, height], geoJSON);
 
-                var path = d3.geoPath()
-                    .projection(projection);
+        var path = d3.geoPath()
+            .projection(projection);
 
-                var svg = d3.select("#my-map")
-                    .attr("width", width + "px")
-                    .attr("height", height + "px")
-                    .style("fill", "gray")
-                    .style('stroke-width', 3)
-                    .append("svg")
-                    .attr("width", "100%")
-                    .attr("height", "100%")
-                    .call(d3.zoom().on("zoom", function () {svg.attr("transform", d3.event.transform)}))
-                    .append("g");
+        var svg = d3.select("#my-map")
+            .attr("width", width + "px")
+            .attr("height", height + "px")
+            .style("fill", "gray")
+            .style('stroke-width', 3)
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%");
 
-                
+        var tileGroup = svg.append("g");
+        var dotGroup = svg.append("g");
 
-                var states = svg.selectAll("path")
-                    .data(geoJSON.features);
+        
 
-                states.enter().append("path")
-                    .attr("d", function(feature) {
-                        return path(feature);
-                    })
-                    .attr("id", function(feature){
-                        return "id-"+feature.id;
-                    })
+        // var states = svg.selectAll("path")
+        //     .data(geoJSON.features);
+
+        // states.enter().append("path")
+        //     .attr("d", function(feature) {
+        //         return path(feature);
+        //     })
+        //     .attr("id", function(feature){
+        //         return "id-"+feature.id;
+        //     })
                
 
                     
@@ -178,11 +195,11 @@ var colorScale = d3.scaleLinear()
                     .range(["white", "blue"]);
 
 
-                var features = svg.append("g")
+        var features = dotGroup.append("g")
             .attr("class","features");
 
 
-                    features.selectAll("circle")
+        features.selectAll("circle")
                     .data(nest)
                     .enter()
                     .append("circle")
@@ -198,18 +215,73 @@ var colorScale = d3.scaleLinear()
                 d3.select("#tooltip")
                     .style("display", "block")
                     .html("<h3>" + d.key + "</h3>" +
-                    "<h3>" + "Number of Rides: " + d.values.length + "</h3>"+
-                    "<h3>" + "Average Age: " + Math.round(d.averageAge) + "</h3>"+
-                    "<h3>"+ "Identify as Male Riders: " + Math.round((d.gender1/d.values.length)*100) + "%"+ "</h3>"+
-                    "<h3>" + "Identify as Female Riders: "+ Math.round((d.gender2/d.values.length)*100) + "%"+ "</h3>"+
-                    "<h3>"+ "Blue Bike Members: " + Math.round((d.member/d.values.length)*100) + "%"+ "</h3>"+
-                    "<h3>" + "Causual Riders: "+ Math.round((d.casual/d.values.length)*100) + "%"+ "</h3>")
+                    "<h4>" + "Number of Rides: " + d.values.length + "</h4>"+
+                    "<h4>" + "Average Age: " + Math.round(d.averageAge) + "</h4>"+
+                    "<h4>"+ "Male: " + Math.round((d.gender1/d.values.length)*100) + "%"+ "</h4>"+
+                    "<h4>" + "Female: "+ Math.round((d.gender2/d.values.length)*100) + "%"+ "</h4>"+
+                    "<h4>"+ "Blue Bike Members: " + Math.round((d.member/d.values.length)*100) + "%"+ "</h4>"+
+                    "<h4>" + "Causual Riders: "+ Math.round((d.casual/d.values.length)*100) + "%"+ "</h4>")
                     .style("left", mouse[0] + "px")
                     .style("top", mouse[1] - 50 + "px");  })
             .on("mouseout", function(d) {
                 d3.select("#tooltip")
                     .style("display", "none")
             });
+
+                  //new map 
+      var pi = Math.PI;
+      var tau = 2 * pi;
+
+        var tile = d3.tile()
+            .size([width, height]);
+
+        var zoom = d3.zoom()
+            .scaleExtent([1 << 11, 1 << 14])
+            .on("zoom", zoomed);
+
+        // Apply a zoom transform equivalent to projection.{scale,translate,center}.
+        svg
+            .call(zoom)
+            .call(zoom.transform, d3.zoomIdentity
+                .translate(projection.translate())
+                .scale(projection.scale()));
+
+        function zoomed() {
+            var transform = d3.event.transform;
+
+            var tiles = tile
+                .scale(transform.k)
+                .translate([transform.x, transform.y])
+                ();
+
+            projection
+                .scale(transform.k / tau)
+                .translate([transform.x, transform.y]);
+
+            //vector.attr("d", path);
+
+            var image = tileGroup
+                .attr("transform", stringify(tiles.scale, tiles.translate))
+                .selectAll("image")
+                .data(tiles, function(d) { return d; });
+
+            image.exit().remove();
+
+            image.enter().append("image")
+                .attr("xlink:href", function(d) { return "http://" + "abc"[d[1] % 3] + ".tile.openstreetmap.org/" + d[2] + "/" + d[0] + "/" + d[1] + ".png"; })
+                .attr("x", function(d) { return d[0] * 256; })
+                .attr("y", function(d) { return d[1] * 256; })
+                .attr("width", 256)
+                .attr("height", 256)
+                ;
+        }
+
+
+        function stringify(scale, translate) {
+            var k = scale / 256, r = scale % 1 ? Number : Math.round;
+            return "translate(" + r(translate[0] * scale) + "," + r(translate[1] * scale) + ") scale(" + k + ")";
+        }
+        //new map end
 
 
         });
