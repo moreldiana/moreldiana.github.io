@@ -1,7 +1,7 @@
  div.animate-bottom {
-    padding: 100px;
+    padding: 45px; 
   }   
-  
+  html { overflow-y: hidden; overflow-x: hidden;}
   h1 {
     color: blue; 
     font-size: 40px; 
@@ -31,11 +31,14 @@
         background:  white ;
         display: none;
         position: absolute;
-        padding: 10px;
-        pointer-events: none;}
+        padding: 5px;
+        pointer-events: none;
+        top: 100%;
+        left: 50%; 
+        margin-left: -60px;}
 
-        svg{
+         svg{
             display: block;
             margin: auto;
-        }
+        } 
      

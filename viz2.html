@@ -74,9 +74,8 @@
     <div id="loader"></div>
     
     <div style="display:none;" id="myDiv" class="animate-bottom">
-
-        <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
-        <h2 id="intro">The bluebikes, formally hubway bikes, is Boston's public bike share program. Since 2012, this system has increased access to various parts of boston through an active and affordable means of transportation. The data shows trip histories between XX dates. This visualization explores the expanding network of biking stations by gender, membership and age.  </h2>  
+    <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
+    <h2 id="intro">The bluebikes, formally hubway bikes, is Boston's public bike share program. Since 2012, this system has increased access to various parts of boston through an active and affordable means of transportation. The data shows trip histories for December 2018. This visualization explores the expanding network of biking stations by gender, membership and age.  </h2>  
     <svg id="my-map"></svg>
     <div id="tooltip"></div>
    </div> 
@@ -92,19 +91,16 @@ function showPage() {
   document.getElementById("myDiv").style.display = "block";
 }
         var width = window.innerWidth;
-        var height = 700;
+        var height = 500;
 
         d3.queue()
             .defer(d3.csv, "201812-bluebikes-tripdata.csv")
             .defer(d3.csv, "stateNames.csv")
-           //  .defer(d3.json, "ma-towns.json") MA-25-massachusetts-counties.json
-           .defer(d3.json, "Boston_Neighborhoods.geojson")
+           .defer(d3.json, "boston.geojson")
             .awaitAll(function(error, dataArray) {
 
                 var data = dataArray[0];
                 var names = dataArray[1];
-               // var stateTopojson = dataArray[2];
-
                 var geoJSON = dataArray[2];
                 console.log(geoJSON);
 
@@ -134,7 +130,7 @@ function showPage() {
                 var svg = d3.select("#my-map")
                     .attr("width", width + "px")
                     .attr("height", height + "px")
-                    .style("fill", "gray")
+                    .style("fill", "#d4d8dd")
                     .style("stroke-width", 1)
                     .style("stroke", "black")
                     .append("svg")
@@ -172,11 +168,13 @@ function showPage() {
                 
 
 
-                var extent = d3.extent(data);
-
+               // var extent = d3.extent(data);
+                var domain = d3.extent(nest, function(d) {
+                    return d.values.length;
+                });
 var colorScale = d3.scaleLinear()
-                    .domain([0, 900]) //add extent
-                    .range(["white", "blue"]);
+                    .domain([0,1000]) //add extent
+                    .range(["gray", "blue"]);
 
 
                 var features = svg.append("g")
@@ -206,8 +204,8 @@ var colorScale = d3.scaleLinear()
                     "<h4>" + "Female: "+ Math.round((d.gender2/d.values.length)*100) + "%"+ "</h4>"+
                     "<h4>"+ "Blue Bike Members: " + Math.round((d.Member/d.values.length)*100) + "%"+ "</h4>"+
                     "<h4>" + "Causual Riders: "+ Math.round((d.Casual/d.values.length)*100) + "%"+ "</h4>")
-                    .style("left", mouse[0] + "px")
-                    .style("top", mouse[1] - 50 + "px");  })
+                    .style("left", mouse[0] + 90 + "px")
+                    .style("top", mouse[1] - 70 + "px")  })
             .on("mouseout", function(d) {
                 d3.select("#tooltip")
                     .style("display", "none")
