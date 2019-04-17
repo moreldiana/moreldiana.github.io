@@ -114,14 +114,14 @@ d3.queue()
     .defer(d3.csv, "201812-bluebikes-tripdata.csv")
     .defer(d3.csv, "stateNames.csv")
     //  .defer(d3.json, "ma-towns.json")
-    .defer(d3.json, "MA-25-massachusetts-counties.json")
+    .defer(d3.json, "boston-metro.json")
     .awaitAll(function(error, dataArray) {
 
         var data = dataArray[0];
         var names = dataArray[1];
         var stateTopojson = dataArray[2];
 
-        var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.cb_2015_massachusetts_county_20m);
+        var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects.merged-layers);
         console.log(geoJSON);
 
         // cb_2015_massachusetts_county_20m

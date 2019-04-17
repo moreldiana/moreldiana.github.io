@@ -96,33 +96,36 @@ function showPage() {
         d3.queue()
             .defer(d3.csv, "201812-bluebikes-tripdata.csv")
             .defer(d3.csv, "stateNames.csv")
-           .defer(d3.json, "boston.geojson")
+           .defer(d3.json, "massachusetts_cities_towns_poly.geojson")
             .awaitAll(function(error, dataArray) {
 
                 var data = dataArray[0];
                 var names = dataArray[1];
+                // var stateTopojson = dataArray[2];
+               // var geoJSON = topojson.feature(stateTopojson, stateTopojson.objects);
                 var geoJSON = dataArray[2];
                 console.log(geoJSON);
 
-            //cb_2015_massachusetts_county_20m
-            //    geoJSON.features = geoJSON.features.filter(function(state) {
-            //        return state.properties.NAME != "Barnstable" 
-            //        &&  state.properties.NAME != "Berkshire"
-            //        &&  state.properties.NAME != "Franklin" 
-            //        &&  state.properties.NAME != "Hampshire" 
-            //        &&  state.properties.NAME != "Hampden" 
-            //        &&  state.properties.NAME != "Worcester"
-            //        &&  state.properties.NAME != "Bristol"
-            //        &&  state.properties.NAME != "Essex"
-            //        &&  state.properties.NAME != "Dukes"
-            //        &&  state.properties.NAME != "Nantucket"
-            //        &&  state.properties.NAME != "Plymouth"
+    
+                geoJSON.features = geoJSON.features.filter(function(state) {
+                   return state.properties.county != "BARNSTABLE" 
+                   &&  state.properties.county != "BERKSHIRE"
+                   &&  state.properties.county != "FRANKLIN" 
+                   &&  state.properties.county != "HAMPSHIRE" 
+                   &&  state.properties.county != "HAMPDEN" 
+                   &&  state.properties.county != "WORCESTER"
+                   &&  state.properties.county != "BRISTOL"
+                   &&  state.properties.county != "ESSEX"
+                   &&  state.properties.county != "DUKES"
+                   &&  state.properties.county != "NANTUCKET"
+                   &&  state.properties.county != "PLYMOUTH"
+                  // &&  state.properties.town != "EVERETT"
                  
-            //         ;
-            //     });
+                    ;
+                });
 
                 var projection = d3.geoMercator()
-                    .fitSize([width, height], geoJSON) ;
+                    .fitSize([width, height], geoJSON);
 
                 var path = d3.geoPath()
                     .projection(projection);
@@ -131,7 +134,7 @@ function showPage() {
                     .attr("width", width + "px")
                     .attr("height", height + "px")
                     .style("fill", "#d4d8dd")
-                    .style("stroke-width", 1)
+                    .style("stroke-width", .5)
                     .style("stroke", "black")
                     .append("svg")
                     .attr("width", "100%")
@@ -144,12 +147,13 @@ function showPage() {
                 var states = svg.selectAll("path")
                     .data(geoJSON.features);
 
-                states.enter().append("path")
-                    .attr("d", function(feature) {
+                states
+                .enter().append("path")
+                .attr("d", function(feature) {
                         return path(feature);
                     })
-                    .attr("id", function(feature){
-                        return "id-"+feature.id;
+               .attr("town", function(feature){
+                        return "town-"+feature.id;
                     })
                
 
@@ -173,7 +177,7 @@ function showPage() {
                     return d.values.length;
                 });
 var colorScale = d3.scaleLinear()
-                    .domain([0,1000]) //add extent
+                    .domain(domain) //add extent
                     .range(["gray", "blue"]);
 
 
@@ -187,7 +191,7 @@ var colorScale = d3.scaleLinear()
                     .append("circle")
                     .attr("transform", function(d) {
                          return "translate(" + projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude]) + ")";})
-                     .attr("r", 2)
+                     .attr("r", .5)
                      .style("stroke-width", 0)
                      .attr("fill", function(d) {
                 return colorScale(d.values.length);
