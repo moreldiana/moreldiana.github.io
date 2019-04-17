@@ -152,8 +152,8 @@ function showPage() {
                 .attr("d", function(feature) {
                         return path(feature);
                     })
-               .attr("town", function(feature){
-                        return "town-"+feature.id;
+               .attr("id", function(feature){
+                        return "id-"+feature.id;
                     })
                
 
