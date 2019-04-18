@@ -26,6 +26,12 @@
             font-size: 14px; 
             font-family: 'Source Sans Pro', sans-serif;
             }
+        h5 {
+                color: rgb(39, 39, 41); 
+                font-size: 14px; 
+                font-family: 'Source Sans Pro', sans-serif;
+                text-align: center;
+                }
     #tooltip {
         border: 1px solid black;
         background:  white ;

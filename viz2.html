@@ -75,10 +75,14 @@
     
     <div style="display:none;" id="myDiv" class="animate-bottom">
     <h1 id="title">Visualizing Boston's Bike Sharing System</h1>  
-    <h2 id="intro">The bluebikes, formally hubway bikes, is Boston's public bike share program. Since 2012, this system has increased access to various parts of boston through an active and affordable means of transportation. The data shows trip histories for December 2018. This visualization explores the expanding network of biking stations by gender, membership and age.  </h2>  
+    <h2 id="intro">The bluebikes, formerly named Hubway Bikes, is Boston's public bike sharing program. Since 2012, this system has increased access to various parts of Boston through active and affordable means of transportation. The data shows trip histories for the month of December 2018 throughout the neighborhoods of Boston, Somerville, Brookline, and Cambridge. This visualization explores the expanding network of bluebike stations and usage by trip duration, gender, membership, and age. - Diana Morel  </h2>  
     <svg id="my-map"></svg>
     <div id="tooltip"></div>
+    <div id="legend1"></div>
+    <h5 id="legendtitle">Number of Riders</h5>
    </div> 
+
+
    <script>
 var myVar;
 
@@ -97,6 +101,7 @@ function showPage() {
             .defer(d3.csv, "201812-bluebikes-tripdata.csv")
             .defer(d3.csv, "stateNames.csv")
            .defer(d3.json, "massachusetts_cities_towns_poly.geojson")
+         //  .defer(d3.json,"subwaylines_p_odp.json")
             .awaitAll(function(error, dataArray) {
 
                 var data = dataArray[0];
@@ -119,7 +124,65 @@ function showPage() {
                    &&  state.properties.county != "DUKES"
                    &&  state.properties.county != "NANTUCKET"
                    &&  state.properties.county != "PLYMOUTH"
-                  // &&  state.properties.town != "EVERETT"
+                   &&  state.properties.town != "PLAINVILLE"
+                   &&  state.properties.town != "CANTON"
+                   &&  state.properties.town != "WRENTHAM"
+                   &&  state.properties.town != "NORFOLK"
+                   &&  state.properties.town != "MILLIS"
+                   &&  state.properties.town != "SHERBORN"
+                   &&  state.properties.town != "NATICK"
+                   &&  state.properties.town != "WAYLAND"
+                   &&  state.properties.town != "CONCORD"
+                   &&  state.properties.town != "CARLISLE"
+                   &&  state.properties.town != "CHELMSFORD"
+                   &&  state.properties.town != "LOWELL"
+                   &&  state.properties.town != "DRACUT"
+                   &&  state.properties.town != "TEWKSBURY"
+                   &&  state.properties.town != "BILLERICA"
+                   &&  state.properties.town != "BEDFORD"
+                   &&  state.properties.town != "LINCOLN"
+                   &&  state.properties.town != "LEXINGTON"
+                   &&  state.properties.town != "WESTON"
+                   &&  state.properties.town != "WALTHAM"
+                   &&  state.properties.town != "WELLESLEY"
+                   &&  state.properties.town != "NEEDHAM"
+                   &&  state.properties.town != "DOVER"
+                   &&  state.properties.town != "MEDFIELD"
+                   &&  state.properties.town != "WALPOLE"
+                   &&  state.properties.town != "FOXBOROUGH"
+                   &&  state.properties.town != "WILMINGTON"
+                   &&  state.properties.town != "NORTH READING"
+                   &&  state.properties.town != "READING"
+                   &&  state.properties.town != "BURLINGTON"
+                   &&  state.properties.town != "WOBURN"
+                   &&  state.properties.town != "STONEHAM"
+                   &&  state.properties.town != "WAKEFIELD"
+                   &&  state.properties.town != "MELROSE"
+                   &&  state.properties.town != "WINCHESTER"
+                   &&  state.properties.town != "ARLINGTON"
+                   &&  state.properties.town != "MEDFORD"
+                   &&  state.properties.town != "BELMONT"
+                   &&  state.properties.town != "WATERTOWN"
+                   &&  state.properties.town != "NEWTON"
+                   &&  state.properties.town != "EVERETT"
+                   &&  state.properties.town != "CHELSEA"
+                   &&  state.properties.town != "REVERE"
+                   &&  state.properties.town != "MALDEN"
+                   &&  state.properties.town != "WINTHROP"
+                 
+                   &&  state.properties.town != "DEDHAM"
+                   &&  state.properties.town != "WESTWOOD"
+                   &&  state.properties.town != "NORWOOD"
+                   &&  state.properties.town != "MILTON"
+                   &&  state.properties.town != "QUINCY"
+                   &&  state.properties.town != "RANDOLPH"
+                   &&  state.properties.town != "BRAINTREE"
+                   &&  state.properties.town != "WEYMOUTH"
+                   &&  state.properties.town != "HOLBROOK"
+                   &&  state.properties.town != "AVON"
+                   &&  state.properties.town != "STOUGHTON"
+                   &&  state.properties.town != "COHASSET"
+                   &&  state.properties.town != "SHARON"
                  
                     ;
                 });
@@ -133,7 +196,7 @@ function showPage() {
                 var svg = d3.select("#my-map")
                     .attr("width", width + "px")
                     .attr("height", height + "px")
-                    .style("fill", "#d4d8dd")
+                    .style("fill", "#e9ecf3")
                     .style("stroke-width", .5)
                     .style("stroke", "black")
                     .append("svg")
@@ -153,7 +216,7 @@ function showPage() {
                         return path(feature);
                     })
                .attr("id", function(feature){
-                        return "id-"+feature.id;
+                        return "id-"+feature.properties.town;
                     })
                
 
@@ -163,6 +226,7 @@ function showPage() {
                 .key(function(d){return d.startstationname;})
                 .entries(data)
                 nest.forEach(function(d){d.averageAge = 2019 - d3.mean(d.values,function(row){return row.birthyear;})})
+                nest.forEach(function(d){d.averageDur =d3.mean(d.values,function(row){return row.tripduration;})})
                 nest.forEach(function(d){d.gender1 = d3.sum(d.values,function(row){return row.gender == 1;})})
                 nest.forEach(function(d){d.gender2 = d3.sum(d.values,function(row){return row.gender == 2;})})
                 nest.forEach(function(d){d.gendern = d3.sum(d.values,function(row){return row.gender == 0;})})
@@ -177,7 +241,7 @@ function showPage() {
                     return d.values.length;
                 });
 var colorScale = d3.scaleLinear()
-                    .domain(domain) //add extent
+                    .domain(domain) 
                     .range(["gray", "blue"]);
 
 
@@ -191,7 +255,7 @@ var colorScale = d3.scaleLinear()
                     .append("circle")
                     .attr("transform", function(d) {
                          return "translate(" + projection([d.values[0].startstationlongitude, d.values[0].startstationlatitude]) + ")";})
-                     .attr("r", .5)
+                     .attr("r", 1)
                      .style("stroke-width", 0)
                      .attr("fill", function(d) {
                 return colorScale(d.values.length);
@@ -203,6 +267,7 @@ var colorScale = d3.scaleLinear()
                     .style("display", "block")
                     .html("<h3>" + d.key + "</h3>" +
                     "<h4>" + "Number of Rides: " + d.values.length + "</h4>"+
+                    "<h4>" + "Average Trip Duration: " + Math.round(d.averageDur/60)+" minutes"+ "</h4>"+
                     "<h4>" + "Average Age: " + Math.round(d.averageAge) + "</h4>"+
                     "<h4>"+ "Male: " + Math.round((d.gender1/d.values.length)*100) + "%"+ "</h4>"+
                     "<h4>" + "Female: "+ Math.round((d.gender2/d.values.length)*100) + "%"+ "</h4>"+
@@ -216,7 +281,75 @@ var colorScale = d3.scaleLinear()
             });
 
 
-        });
+      
+
+
+
+
+        var w = 300, h = 50;
+
+var key = d3.select("#legend1")
+  .append("svg")
+  .attr("width", w)
+  .attr("height", h)
+  ;
+
+var legend = key.append("defs")
+  .append("svg:linearGradient")
+  .attr("id", "gradient")
+  .attr("x1", "0%")
+  .attr("y1", "100%")
+  .attr("x2", "100%")
+  .attr("y2", "100%")
+  .attr("spreadMethod", "pad")
+  ;
+
+legend.append("stop")
+  .attr("offset", "0%")
+  .attr("stop-color", "gray")
+  .attr("stop-opacity", 1);
+
+legend.append("stop")
+  .attr("offset", "100%")
+  .attr("stop-color", "blue")
+  .attr("stop-opacity", 1);
+
+// legend.append("stop")
+//   .attr("offset", "66%")
+//   .attr("stop-color", "#7bccc4")
+//   .attr("stop-opacity", 1);
+
+// legend.append("stop")
+//   .attr("offset", "100%")
+//   .attr("stop-color", "#084081")
+//   .attr("stop-opacity", 1);
+
+key.append("rect")
+  .attr("width", w)
+  .attr("height", h - 30)
+  .style("fill", "url(#gradient)")
+  .attr("transform", "translate(0,10)")
+  ;
+
+var y = d3.scaleLinear()
+  .range([300, 0])
+ // .domain([(d3.max(nest.values.length)), 10]);
+ .domain([2700, 10]);
+var yAxis = d3.axisBottom()
+  .scale(y)
+  .ticks(5);
+
+key.append("g")
+  .attr("class", "y axis")
+  .attr("transform", "translate(0,30)")
+  .call(yAxis)
+  .append("text")
+  .attr("transform", "rotate(-90)")
+  .attr("y", 0)
+  .attr("dy", ".71em")
+  .style("text-anchor", "end")
+  .text("axis title");
+  });
 
     </script>
   </body>
